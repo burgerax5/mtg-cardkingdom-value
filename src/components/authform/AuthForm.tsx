@@ -14,12 +14,14 @@ interface Props {
     children: React.ReactNode,
     title: string,
     description: string,
-    buttonText: string
+    buttonText: string,
+    handleAction: (data: FormData) => Promise<void>,
+    errors: string
 }
 
-const AuthForm: React.FC<Props> = ({ children, title, description, buttonText, handleAction }) => {
+const AuthForm: React.FC<Props> = ({ children, title, description, buttonText, handleAction, errors }) => {
     return (
-        <form className="w-full max-w-[400px]" action={(e) => handleAction(e)}>
+        <form className="w-full max-w-[400px]" action={handleAction}>
             <Card>
                 <CardHeader>
                     <CardTitle>{title}</CardTitle>
@@ -27,9 +29,12 @@ const AuthForm: React.FC<Props> = ({ children, title, description, buttonText, h
                 </CardHeader>
                 <CardContent>
                     {children}
+                    {errors.length > 0 && <div className='text-destructive'>
+                        {errors}
+                    </div>}
                 </CardContent>
                 <CardFooter>
-                    <Button>{buttonText}</Button>
+                    <Button type="submit">{buttonText}</Button>
                 </CardFooter>
             </Card>
         </form>

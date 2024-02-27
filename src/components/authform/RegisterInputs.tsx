@@ -9,15 +9,15 @@ const RegisterInputs = () => {
             <div className="grid w-full items-center gap-4">
                 <div className="flex flex-col space-y-1.5">
                     <Label htmlFor="username">Username</Label>
-                    <Input id="username" placeholder="Username" />
+                    <Input name="username" id="username" placeholder="Username" autoComplete="username" />
                 </div>
                 <div className="flex flex-col space-y-1.5">
                     <Label htmlFor="password">Password</Label>
-                    <Input id="password" type="password" />
+                    <Input name="password" id="password" type="password" autoComplete="current-password" />
                 </div>
                 <div className="flex flex-col space-y-1.5">
                     <Label htmlFor="confirm_password">Confirm Password</Label>
-                    <Input id="confirm_password" type="password" />
+                    <Input name="confirm-password" id="confirm_password" type="password" />
                 </div>
             </div>
         </>
