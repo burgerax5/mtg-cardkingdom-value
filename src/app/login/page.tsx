@@ -1,10 +1,16 @@
 import React from 'react'
 import AuthForm from '@/components/authform/AuthForm'
 import LoginInputs from '@/components/authform/LoginInputs'
+import { connectToDB } from '@/lib/dbutils'
+import { User } from '@/lib/model'
 
 const Page = () => {
-    const login = async () => {
-        connectToDb()
+    const login = async (data: FormData) => {
+        const api = ''
+        const username = data.get('username')
+        const password = data.get('password')
+
+        connectToDB()
 
     }
 
