@@ -7,9 +7,15 @@ interface IUser {
     cards: ICard[]
 }
 
+interface ISet {
+    name: string,
+    code: string
+}
+
 interface ICard {
     name: string,
     image: string,
+    set: ISet,
     prices: {
         nm: number,
         ex: number,
@@ -24,9 +30,21 @@ interface ICard {
     }
 }
 
+const setSchema = new Schema({
+    name: {
+        type: String,
+        unique: true
+    },
+    code: {
+        type: String,
+        unique: true
+    }
+})
+
 const cardSchema = new Schema({
     name: String,
     image: String,
+    set: setSchema,
     prices: {
         nm: {
             type: Number,
@@ -80,3 +98,4 @@ const userSchema = new Schema({
 
 export const User = mongoose.models['User'] || model<IUser>('User', userSchema)
 export const Card = mongoose.models['Card'] || model<ICard>('Card', cardSchema)
+export const Set = mongoose.models['Set'] || model<ISet>('Set', setSchema)
