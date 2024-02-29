@@ -44,41 +44,23 @@ const setSchema = new Schema({
 const cardSchema = new Schema({
     name: String,
     image: String,
-    set: setSchema,
-    prices: {
+    edition: String,
+    conditions: {
         nm: {
-            type: Number,
-            default: 0
+            quantity: { type: Number, default: 0 },
+            price: { type: Number, default: 0 }
         },
         ex: {
-            type: Number,
-            default: 0
+            quantity: { type: Number, default: 0 },
+            price: { type: Number, default: 0 }
         },
         vg: {
-            type: Number,
-            default: 0
+            quantity: { type: Number, default: 0 },
+            price: { type: Number, default: 0 }
         },
         g: {
-            type: Number,
-            default: 0
-        }
-    },
-    quantities: {
-        nm: {
-            type: Number,
-            default: 0
-        },
-        ex: {
-            type: Number,
-            default: 0
-        },
-        vg: {
-            type: Number,
-            default: 0
-        },
-        g: {
-            type: Number,
-            default: 0
+            quantity: { type: Number, default: 0 },
+            price: { type: Number, default: 0 }
         }
     }
 })

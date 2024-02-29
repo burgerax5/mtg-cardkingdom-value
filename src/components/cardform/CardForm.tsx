@@ -1,34 +1,28 @@
 "use client"
 import { Button } from "@/components/ui/button";
-import { Label } from "../ui/label";
-import { Input } from "../ui/input";
-import SetComboBox from "./SetComboBox";
+import { useState } from "react";
+import CardEntry from "./CardEntry";
 
 interface Props {
-    handleAction: (formData: FormData) => Promise<void>
+    handleAction: (formData: FormData) => Promise<any>,
 }
 
 const CardForm: React.FC<Props> = ({ handleAction }) => {
+    const [entries, setEntries] = useState(1)
+
+    const entriesArray = Array.from({ length: entries }, (_, index) => {
+        return <CardEntry key={index} />
+    })
+
     return (
         <form className="flex flex-col gap-3 w-full max-w-[500px] p-6 border rounded-lg" action={handleAction}>
-            <div className="flex gap-3">
-                <div className="flex flex-col space-y-1.5 w-[65px]">
-                    <Label htmlFor="quantity">Qty</Label>
-                    <Input name="quantity" id="quantity" placeholder="0" min="0" max="99" type="number" />
-                </div>
-                <div className="flex flex-col space-y-1.5">
-                    <Label htmlFor="name">Name</Label>
-                    <Input name="name" id="name" placeholder="Name" autoComplete="name" />
-                </div>
-                <div className="flex mt-auto">
-                    <SetComboBox />
-                </div>
+            <div className="flex flex-col gap-3">
+                {entriesArray}
             </div>
-            {/* <Textarea
-                name="cards"
-                placeholder="2 Puresteel Paladin"
-                className="resize-none w-full" /> */}
-            <Button type="submit">Build Deck</Button>
+            <div className="border rounded-lg p-2 text-center cursor-pointer hover:bg-slate-600 hover:text-white transition-all duration-200" onClick={() => setEntries(prev => prev + 1)}>
+                + Card
+            </div>
+            <Button type="submit">Get value</Button>
         </form>
     )
 }
