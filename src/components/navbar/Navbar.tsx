@@ -15,6 +15,7 @@ const Navbar: React.FC<Props> = ({ isLoggedIn }) => {
                     <Image src={Logo} alt="logo" height={40} />
                 </Link>
                 <nav className="flex gap-3">
+                    <Link href="/cards">Cards</Link>
                     {!isLoggedIn && <>
                         <Link href="/login">Login</Link>
                         <Link href="/register">Register</Link>

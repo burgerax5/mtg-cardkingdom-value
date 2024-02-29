@@ -15,7 +15,7 @@ interface ISet {
 interface ICard {
     name: string,
     image: string,
-    set: ISet,
+    edition: string,
     prices: {
         nm: number,
         ex: number,
