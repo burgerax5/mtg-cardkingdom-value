@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import {
     Select,
     SelectContent,
@@ -26,14 +26,17 @@ const SelectSet = () => {
 
         getSets()
     }, [])
+
+    const memoizedSets = useMemo(() => sets, [sets])
+
     return (
         <Select name="edition">
             <SelectTrigger className="w-[180px] text-left">
                 <SelectValue placeholder="All Editions" />
             </SelectTrigger>
             <SelectContent className="w-[180px]">
-                {sets.map(set => (
-                    <SelectItem key={set.code} value={set.code ? set.code : "all"}>{set.name}</SelectItem>
+                {memoizedSets.map(set => (
+                    <SelectItem key={set.code} value={set.name ? set.name : "all"}>{set.name}</SelectItem>
                 ))}
             </SelectContent>
         </Select>

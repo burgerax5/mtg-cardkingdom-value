@@ -1,6 +1,7 @@
 import styles from "./cards.module.css"
 import Card from '@/components/card/Card'
 import CardPagination from '@/components/pagination/CardPagination'
+import { Suspense } from "react"
 
 interface ICard {
     name: string,

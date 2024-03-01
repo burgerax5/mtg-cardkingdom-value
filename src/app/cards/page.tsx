@@ -2,7 +2,7 @@
 import CardResultsWrapper from '@/components/cardresultswrapper/CardResultsWrapper'
 import SearchForm from '@/components/searchform/SearchForm'
 import { useSearchParams } from 'next/navigation'
-import React from 'react'
+import React, { Suspense } from 'react'
 
 
 const Page = async () => {
@@ -17,12 +17,16 @@ const Page = async () => {
     if (searchParams.get('edition'))
         params.push('edition=' + searchParams.get('edition') as string)
 
+    const search = searchParams.get('name')
+
     return (
         <div className="p-3">
             <h1 className="text-[2rem] font-bold">Search Results</h1>
             <div className="flex flex-col">
-                <SearchForm />
-                <CardResultsWrapper params={params} />
+                <SearchForm search={search} />
+                <Suspense fallback={<div>Loading...</div>}>
+                    <CardResultsWrapper params={params} />
+                </Suspense>
             </div>
         </div>
     )
