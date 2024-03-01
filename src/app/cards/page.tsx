@@ -1,5 +1,7 @@
 import Card from '@/components/card/Card'
+import SearchForm from '@/components/searchform/SearchForm'
 import React from 'react'
+import styles from "./cards.module.css"
 
 interface ICard {
     name: string,
@@ -39,15 +41,17 @@ const getCards = async (): Promise<ICard[]> => {
 
 const page = async () => {
     const cards = await getCards()
-    console.log(cards)
 
     return (
-        <div>
-            <h1>Cards</h1>
-            <div className="grid grid-cols-1 sm:grid-cols-6">
-                {cards.map(card => (
-                    <Card key={crypto.randomUUID()} card={card} />
-                ))}
+        <div className="p-3">
+            <h1 className="text-[2rem] font-bold">Search Results</h1>
+            <div className="flex flex-col">
+                <SearchForm />
+                <div className={styles["cards-container"]}>
+                    {cards.map(card => (
+                        <Card key={crypto.randomUUID()} card={card} />
+                    ))}
+                </div>
             </div>
         </div>
     )
