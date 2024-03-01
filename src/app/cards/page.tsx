@@ -1,21 +1,28 @@
+import Card from '@/components/card/Card'
 import React from 'react'
 
 interface ICard {
     name: string,
     image: string,
     edition: string,
-    prices: {
-        nm: number,
-        ex: number,
-        vg: number,
-        g: number,
+    conditions: {
+        nm: {
+            price: number,
+            quantity: number
+        },
+        ex: {
+            price: number,
+            quantity: number
+        },
+        vg: {
+            price: number,
+            quantity: number
+        },
+        g: {
+            price: number,
+            quantity: number
+        },
     },
-    quantities: {
-        nm: number,
-        ex: number,
-        vg: number,
-        g: number,
-    }
 }
 
 const getCards = async (): Promise<ICard[]> => {
@@ -37,9 +44,11 @@ const page = async () => {
     return (
         <div>
             <h1>Cards</h1>
-            {cards.map(card => (
-                <div>{card.name}</div>
-            ))}
+            <div className="grid grid-cols-1 sm:grid-cols-6">
+                {cards.map(card => (
+                    <Card key={crypto.randomUUID()} card={card} />
+                ))}
+            </div>
         </div>
     )
 }

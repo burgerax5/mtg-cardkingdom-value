@@ -5,7 +5,11 @@ const nextConfig = {
             {
                 protocol: 'https',
                 hostname: 'www.cardkingdom.com',
-            }
+            },
+            {
+                protocol: 'https',
+                hostname: 'cardkingdom.imgix.net',
+            },
         ]
     }
 };
