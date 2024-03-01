@@ -20,14 +20,21 @@ interface ICard {
 }
 
 export async function GET(req: Request) {
-    let from_page = 1
-    // if (page)
-    //     from_page = parseInt(page)
+    const url = new URL(req.url)
+
+    const page = url.searchParams.get('page') ? parseInt(url.searchParams.get('page') as string) : 1
+    const searchParam = url.searchParams.get('name') ? url.searchParams.get('name') as string : "";
+    const editionParam = url.searchParams.get('edition');
+
+    const regex = RegExp(searchParam, 'i')
 
     try {
         connectToDB()
-        const cards = await Card.find({}).skip((from_page - 1) * 100).limit(100).exec()
-        return new Response(JSON.stringify(cards), { status: 200 })
+        const num_cards = await Card.countDocuments({ name: regex })
+        const cards = await Card.find({ name: regex }).skip((page - 1) * 100).limit(100).exec()
+        return new Response(JSON.stringify({
+            cards, num_cards
+        }), { status: 200 })
     } catch (error) {
         return new Response("Failed to fetch card data", { status: 500 })
     }

@@ -2,7 +2,7 @@
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 
-const page = async () => {
+const Page = async () => {
     const router = useRouter()
 
     const logout = async () => {
@@ -21,4 +21,4 @@ const page = async () => {
     )
 }
 
-export default page
+export default Page

@@ -1,60 +1,31 @@
-import Card from '@/components/card/Card'
+"use client"
+import CardResultsWrapper from '@/components/cardresultswrapper/CardResultsWrapper'
 import SearchForm from '@/components/searchform/SearchForm'
+import { useSearchParams } from 'next/navigation'
 import React from 'react'
-import styles from "./cards.module.css"
 
-interface ICard {
-    name: string,
-    image: string,
-    edition: string,
-    conditions: {
-        nm: {
-            price: number,
-            quantity: number
-        },
-        ex: {
-            price: number,
-            quantity: number
-        },
-        vg: {
-            price: number,
-            quantity: number
-        },
-        g: {
-            price: number,
-            quantity: number
-        },
-    },
-}
 
-const getCards = async (): Promise<ICard[]> => {
-    const url = 'http://localhost:3000/api/cards'
-    const res = await fetch(url, { cache: 'no-store' })
+const Page = async () => {
+    const searchParams = useSearchParams()
 
-    if (!res.ok) {
-        console.error(res.status)
-        throw new Error('Failed to fetch card data')
-    }
+    const params: string[] = []
 
-    return res.json()
-}
-
-const page = async () => {
-    const cards = await getCards()
+    if (searchParams.get('page'))
+        params.push('page=' + searchParams.get('name') as string)
+    if (searchParams.get('name'))
+        params.push('name=' + searchParams.get('name') as string)
+    if (searchParams.get('edition'))
+        params.push('edition=' + searchParams.get('edition') as string)
 
     return (
         <div className="p-3">
             <h1 className="text-[2rem] font-bold">Search Results</h1>
             <div className="flex flex-col">
                 <SearchForm />
-                <div className={styles["cards-container"]}>
-                    {cards.map(card => (
-                        <Card key={crypto.randomUUID()} card={card} />
-                    ))}
-                </div>
+                <CardResultsWrapper params={params} />
             </div>
         </div>
     )
 }
 
-export default page
+export default Page

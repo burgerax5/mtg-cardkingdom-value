@@ -40,12 +40,12 @@ const Card: React.FC<Props> = ({ card }) => {
         let selected = 0
         const conditions = ["NM", "EX", "VG", "G"]
 
-        if (nm === 0) selected++
-        if (ex === 0) selected++
-        if (vg === 0) selected++
-        if (g === 0) selected++
+        if (nm !== 0) selected = 0
+        else if (ex !== 0) selected = 1
+        else if (vg !== 0) selected = 2
+        else if (g !== 0) selected = 3
 
-        return conditions[selected % 4] as "NM" | "EX" | "VG" | "G"
+        return conditions[selected] as "NM" | "EX" | "VG" | "G"
     }
 
     const findSelectedPrice = () => {

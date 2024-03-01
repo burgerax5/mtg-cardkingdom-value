@@ -33,13 +33,14 @@ const Page = () => {
 
     return (
         <AuthForm
-            children={<RegisterInputs />}
             title="Register"
             description="Join today!"
             buttonText="Create account"
             handleAction={register}
             errors={errors}
-        />
+        >
+            <RegisterInputs />
+        </AuthForm>
     )
 }
 

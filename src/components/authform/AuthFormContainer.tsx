@@ -78,7 +78,7 @@ const AuthFormContainer = () => {
                                 </div>
                                 <div>
                                     {results.cards_data.map(card => (
-                                        <div className=" border p-3 rounded-lg">
+                                        <div className=" border p-3 rounded-lg" key={crypto.randomUUID()}>
                                             <h3 className="font-bold text-xl mb-3">{card.name}</h3>
                                             <div className="grid grid-cols-3">
                                                 <Image src={`https://www.cardkingdom.com${card.image as string}`} alt={card.name as string} width={100} height={120} />

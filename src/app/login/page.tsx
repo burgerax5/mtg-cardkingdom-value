@@ -39,13 +39,14 @@ const Page = () => {
 
     return (
         <AuthForm
-            children={<LoginInputs />}
             title="Login"
             description="Track your MTG card prices"
             buttonText="Sign In"
             handleAction={login}
             errors={errors}
-        />
+        >
+            <LoginInputs />
+        </AuthForm>
     )
 }
 
