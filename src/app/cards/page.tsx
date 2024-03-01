@@ -5,13 +5,13 @@ import { useSearchParams } from 'next/navigation'
 import React, { Suspense } from 'react'
 
 
-const Page = async () => {
+const Page = () => {
     const searchParams = useSearchParams()
 
     const params: string[] = []
 
     if (searchParams.get('page'))
-        params.push('page=' + searchParams.get('name') as string)
+        params.push('page=' + searchParams.get('page') as string)
     if (searchParams.get('name'))
         params.push('name=' + searchParams.get('name') as string)
     if (searchParams.get('edition'))
@@ -25,7 +25,7 @@ const Page = async () => {
             <div className="flex flex-col">
                 <SearchForm search={search} />
                 <Suspense fallback={<div>Loading...</div>}>
-                    <CardResultsWrapper params={params} />
+                    <CardResultsWrapper params={params} curr_page={searchParams.get('page')} />
                 </Suspense>
             </div>
         </div>

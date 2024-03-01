@@ -28,7 +28,8 @@ interface ICard {
 }
 
 interface Props {
-    params: string[]
+    params: string[],
+    curr_page: string | null
 }
 
 const getCards = async (params: string): Promise<{
@@ -36,7 +37,7 @@ const getCards = async (params: string): Promise<{
     num_cards: number
 }> => {
     const url = 'http://localhost:3000/api/cards?' + params
-    const res = await fetch(url, { cache: 'no-store' })
+    const res = await fetch(url)
 
     if (!res.ok) {
         console.error(res.status)
@@ -46,8 +47,9 @@ const getCards = async (params: string): Promise<{
     return await res.json()
 }
 
-const CardResultsWrapper = async ({ params }: Props) => {
-    const results = await getCards(params.join('&'))
+const CardResultsWrapper = async ({ params, curr_page }: Props) => {
+    const queries = params.join('&')
+    const results = await getCards(queries)
     const { cards, num_cards } = results
 
     return (
@@ -58,7 +60,10 @@ const CardResultsWrapper = async ({ params }: Props) => {
                     <Card key={crypto.randomUUID()} card={card} />
                 ))}
             </div>
-            <CardPagination />
+            <CardPagination
+                path={"http://localhost:3000/cards?" + queries}
+                curr_page={curr_page}
+                num_cards={num_cards} />
         </>
     )
 }
