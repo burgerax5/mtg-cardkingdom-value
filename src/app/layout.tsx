@@ -21,7 +21,7 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <body className={`${inter.className} flex flex-col items-center`}>
+      <body className={`${inter.className} flex flex-col items-center min-h-svh`}>
         <Navbar isLoggedIn={isLoggedIn} />
         {children}
       </body>
