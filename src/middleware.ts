@@ -9,16 +9,13 @@ export async function middleware(request: NextRequest) {
     try {
         const token = cookies().get('access_token')?.value
         const isLoggedIn = await checkAuthenticated(token)
-        // const { payload, protectedHeader } = await getJWTPayload(token)
 
-        const requestHeaders = new Headers(request.headers)
-
-        // // This route should not be accessible
+        // This route should not be accessible
         if (request.url.startsWith('/api/scrape')) {
             return NextResponse.redirect(new URL('/home', request.url))
         }
 
-        // // Must be authenticated
+        // Deck API is only accessible to authenticated users
         else if (request.url.startsWith('/api/deck')) {
             if (!isLoggedIn)
                 return NextResponse.redirect(new URL('/login', request.url))
@@ -26,10 +23,16 @@ export async function middleware(request: NextRequest) {
                 return NextResponse.next()
         }
 
-        // // Login or Register Page
+        // Login or Register Page
         else if (request.url.startsWith('/api/auth/login' || request.url.startsWith('/api/auth/register'))) {
             if (!isLoggedIn) return NextResponse.next()
-            else NextResponse.redirect(new URL('/', request.url))
+            else NextResponse.redirect(new URL('/home', request.url))
+        }
+
+        // Logout
+        else if (request.url.startsWith('/api/auth/logout')) {
+            if (!isLoggedIn) return NextResponse.redirect(new URL('/home', request.url))
+            else NextResponse.next()
         }
 
         // Must not be authenticated

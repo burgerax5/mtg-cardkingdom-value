@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { Button } from '../ui/button'
 
 interface ICard {
+    _id: string,
     name: string,
     image: string,
     edition: string,
@@ -42,25 +43,25 @@ const Card: React.FC<Props> = ({ card }) => {
         const g = card.conditions.g.quantity
 
         let selected = 0
-        const conditions = ["NM", "EX", "VG", "G"]
+        const conditions = ["nm", "ex", "vg", "g"]
 
         if (nm !== 0) selected = 0
         else if (ex !== 0) selected = 1
         else if (vg !== 0) selected = 2
         else if (g !== 0) selected = 3
 
-        return conditions[selected] as "NM" | "EX" | "VG" | "G"
+        return conditions[selected] as "nm" | "ex" | "vg" | "g"
     }
 
     const findSelectedPrice = () => {
         switch (selectedCondition) {
-            case "NM":
+            case "nm":
                 return card.conditions.nm.price.toFixed(2)
-            case "EX":
+            case "ex":
                 return card.conditions.ex.price.toFixed(2)
-            case "VG":
+            case "vg":
                 return card.conditions.vg.price.toFixed(2)
-            case "G":
+            case "g":
                 return card.conditions.g.price.toFixed(2)
             default:
                 return 0
@@ -69,20 +70,23 @@ const Card: React.FC<Props> = ({ card }) => {
 
     const findSelectedQuantity = () => {
         switch (selectedCondition) {
-            case "NM":
+            case "nm":
                 return card.conditions.nm.quantity
-            case "EX":
+            case "ex":
                 return card.conditions.ex.quantity
-            case "VG":
+            case "vg":
                 return card.conditions.vg.quantity
-            case "G":
+            case "g":
                 return card.conditions.g.quantity
             default:
                 return 0
         }
     }
 
-    const addToDeck = async (card: ICard) => {
+    const addToDeck = async (
+        cardId: string,
+        quantity: number = 1,
+        condition: 'nm' | 'ex' | 'vg' | 'g') => {
         try {
             const url = 'http://localhost:3000/api/deck/add'
             const res = await fetch(url, {
@@ -92,7 +96,9 @@ const Card: React.FC<Props> = ({ card }) => {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    card: card
+                    cardId: cardId,
+                    quantity,
+                    condition
                 })
             })
 
@@ -106,7 +112,7 @@ const Card: React.FC<Props> = ({ card }) => {
         }
     }
 
-    const [selectedCondition, setSelectedCondition] = useState<"NM" | "EX" | "VG" | "G">(findGreatestCondition())
+    const [selectedCondition, setSelectedCondition] = useState<"nm" | "ex" | "vg" | "g">(findGreatestCondition())
     const active = "bg-slate-0 border-t border-l border-r"
     const inactive = "bg-slate-100 text-slate-400 border hover:text-black hover:underline"
 
@@ -119,17 +125,17 @@ const Card: React.FC<Props> = ({ card }) => {
             <div className="text-sm truncate py-1">{card.name}</div>
             <div className="flex flex-col">
                 <div className="grid grid-cols-4 cursor-pointer text-center">
-                    <div className={`${selectedCondition === "NM" ? active : inactive}`} onClick={() => setSelectedCondition("NM")}>NM</div>
-                    <div className={`${selectedCondition === "EX" ? active : inactive}`} onClick={() => setSelectedCondition("EX")}>EX</div>
-                    <div className={`${selectedCondition === "VG" ? active : inactive}`} onClick={() => setSelectedCondition("VG")}>VG</div>
-                    <div className={`${selectedCondition === "G" ? active : inactive}`} onClick={() => setSelectedCondition("G")}>G</div>
+                    <div className={`${selectedCondition === "nm" ? active : inactive}`} onClick={() => setSelectedCondition("nm")}>NM</div>
+                    <div className={`${selectedCondition === "ex" ? active : inactive}`} onClick={() => setSelectedCondition("ex")}>EX</div>
+                    <div className={`${selectedCondition === "vg" ? active : inactive}`} onClick={() => setSelectedCondition("vg")}>VG</div>
+                    <div className={`${selectedCondition === "g" ? active : inactive}`} onClick={() => setSelectedCondition("g")}>G</div>
                 </div>
                 <div className="border-l border-b border-r p-3 h-[5rem] text-center flex flex-col gap-1">
                     {findSelectedQuantity()} @ ${findSelectedPrice()}
                     {!findSelectedQuantity() && <span className="text-slate-400">Out of stock.</span>}
                 </div>
                 <div className="border p-3">
-                    <Button onClick={() => addToDeck(card)}>+ Add to Deck</Button>
+                    <Button onClick={() => addToDeck(card._id, 1, selectedCondition)}>+ Add to Deck</Button>
                 </div>
             </div>
         </div>

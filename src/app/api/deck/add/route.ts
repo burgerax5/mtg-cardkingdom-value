@@ -10,7 +10,7 @@ export async function POST(req: Request) {
 
         const tmp_payload: any = payload
 
-        const { message } = await addCardToDeck(tmp_payload.username, cardId, quantity, condition)
+        const { success, message } = await addCardToDeck(tmp_payload.username, cardId, quantity, condition)
 
         return new Response(message)
     } catch (error) {

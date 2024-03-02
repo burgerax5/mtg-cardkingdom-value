@@ -4,6 +4,7 @@ import CardPagination from '@/components/pagination/CardPagination'
 import React, { Suspense } from "react"
 
 interface ICard {
+    _id: string,
     name: string,
     image: string,
     edition: string,

@@ -41,6 +41,8 @@ export const addCardToDeck = async (
     quantity: number,
     condition: 'nm' | 'ex' | 'vg' | 'g') => {
     try {
+        console.log(cardId, quantity, condition)
+
         connectToDB()
         const user = await getUser(username)
         const isCard = await checkCard(cardId)
@@ -62,5 +64,33 @@ export const addCardToDeck = async (
     } catch (error) {
         console.error("Failed to add card to the deck.", error)
         return { success: false, message: "Failed to add card to the deck" }
+    }
+}
+
+export const removeCardFromDeck = async (
+    username: string,
+    cardId: Schema.Types.ObjectId,
+    condition: 'nm' | 'ex' | 'vg' | 'g'
+) => {
+    try {
+        connectToDB()
+        const user = await getUser(username)
+        const isCard = await checkCard(cardId)
+
+        if (!isCard) throw new Error("Card does not exist")
+        if (!['nm', 'ex', 'vg', 'g'].includes(condition)) throw new Error("Invalid card condition")
+
+        const existingCardIndex = user.cards.findIndex((c) => String(c.cardId) === String(cardId) && c.condition === condition)
+
+        if (existingCardIndex === -1)
+            throw new Error("User does not have this card in their deck")
+        else
+            user.cards.splice(existingCardIndex, 1)
+
+        await user.save()
+        return { success: true, message: "Card removed successfully" }
+    } catch (error) {
+        console.error("Failed to remove card from deck. " + (error as Error).message)
+        return { success: false, message: "Failed to remove card to the deck" }
     }
 }
