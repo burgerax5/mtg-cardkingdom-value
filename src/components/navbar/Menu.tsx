@@ -30,11 +30,11 @@ const Menu: React.FC<Props> = ({ isLoggedIn }) => {
                     </div>
                     <div className="flex gap-3 mt-12 mb-60">
                         {!isLoggedIn && <>
-                            <Link href="/login">
+                            <Link href="/login" onClick={() => setToggled(false)}>
                                 <Button>Login</Button>
                             </Link>
                         </>}
-                        {isLoggedIn && <Link href="/logout">
+                        {isLoggedIn && <Link href="/logout" onClick={() => setToggled(false)}>
                             <Button className={styles.link + " hover:text-red-500"} variant="outline">
                                 Logout
                                 <LogOut />
