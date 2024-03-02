@@ -1,11 +1,18 @@
 .link {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 1rem;
+    z-index: 99;
+    position: relative;
 }
 
 .desktop-nav>.link:hover {
     opacity: 0.75;
+}
+
+.mobile-nav .link {
+    width: 100%;
 }
 
 .link>svg {
@@ -21,8 +28,18 @@
     margin-left: 2rem;
 }
 
+.menu {
+    display: block;
+}
+
 @media screen and (min-width: 450px) {
     .desktop-nav {
         display: flex;
+    }
+}
+
+@media screen and (min-width: 450px) {
+    .menu {
+        display: none;
     }
 }

@@ -4,6 +4,7 @@ import Link from 'next/link'
 import React from 'react'
 import Logo from "../../../public/logo.svg"
 import { Button } from '../ui/button'
+import Menu from './Menu'
 import styles from "./navbar.module.css"
 
 interface Props {
@@ -19,9 +20,9 @@ const Navbar: React.FC<Props> = ({ isLoggedIn }) => {
                     <div className="font-bold text-[1.25rem] hidden sm:block text-nowrap">Card Appraiser</div>
                 </Link>
                 <nav className={styles["desktop-nav"]}>
-                    <Link className={styles.link} href="/cards">Home</Link>
+                    <Link className={styles.link} href="/">Home</Link>
                     <Link className={styles.link} href="/cards">Cards</Link>
-                    <Link className={styles.link} href="/cards">Deck</Link>
+                    <Link className={styles.link} href="/deck">Deck</Link>
                     <div className="ml-auto flex gap-3">
                         {!isLoggedIn && <>
                             <Link href="/login">
@@ -36,6 +37,7 @@ const Navbar: React.FC<Props> = ({ isLoggedIn }) => {
                         </Link>}
                     </div>
                 </nav>
+                <Menu isLoggedIn={isLoggedIn} />
             </div>
         </header>
     )
