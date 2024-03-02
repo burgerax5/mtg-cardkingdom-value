@@ -2,8 +2,8 @@ import mongoose from "mongoose";
 const { Schema, model, connect } = mongoose
 
 interface IUser {
-    name: string;
-    email: string;
+    username: string;
+    password: string;
     cards: ICard[]
 }
 
@@ -16,17 +16,23 @@ interface ICard {
     name: string,
     image: string,
     edition: string,
-    prices: {
-        nm: number,
-        ex: number,
-        vg: number,
-        g: number,
-    },
-    quantities: {
-        nm: number,
-        ex: number,
-        vg: number,
-        g: number,
+    conditions: {
+        nm: {
+            price: number,
+            quantity: number
+        },
+        ex: {
+            price: number,
+            quantity: number
+        },
+        vg: {
+            price: number,
+            quantity: number
+        },
+        g: {
+            price: number,
+            quantity: number
+        },
     }
 }
 

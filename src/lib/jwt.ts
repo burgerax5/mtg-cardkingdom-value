@@ -8,8 +8,6 @@ export const SignJWT = (user: {
 }
 
 export const verifyJWT = async (token: string) => {
-    // const verifyAsync = util.promisify(jwt.verify)
-
     try {
         // Decoding the token and obtaining the user information
         const user = jwt.verify(token, process.env.TOKEN_SECRET as string);

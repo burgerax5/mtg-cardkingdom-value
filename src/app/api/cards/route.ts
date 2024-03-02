@@ -1,24 +1,6 @@
 import { connectToDB } from "@/lib/dbutils";
 import { Card } from "@/lib/model";
 
-interface ICard {
-    name: string,
-    image: string,
-    edition: string,
-    prices: {
-        nm: number,
-        ex: number,
-        vg: number,
-        g: number,
-    },
-    quantities: {
-        nm: number,
-        ex: number,
-        vg: number,
-        g: number,
-    }
-}
-
 export async function GET(req: Request) {
     const url = new URL(req.url)
 

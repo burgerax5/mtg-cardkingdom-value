@@ -1,6 +1,8 @@
 "use client"
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { Button } from '../ui/button'
 
 interface ICard {
     name: string,
@@ -31,6 +33,8 @@ interface Props {
 }
 
 const Card: React.FC<Props> = ({ card }) => {
+    const router = useRouter()
+
     const findGreatestCondition = () => {
         const nm = card.conditions.nm.quantity
         const ex = card.conditions.ex.quantity
@@ -78,6 +82,30 @@ const Card: React.FC<Props> = ({ card }) => {
         }
     }
 
+    const addToDeck = async (card: ICard) => {
+        try {
+            const url = 'http://localhost:3000/api/deck/add'
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    card: card
+                })
+            })
+
+            if (!res.ok)
+                throw new Error("Failed to add card to deck")
+            else {
+                router.refresh()
+            }
+        } catch (err) {
+            console.error(err)
+        }
+    }
+
     const [selectedCondition, setSelectedCondition] = useState<"NM" | "EX" | "VG" | "G">(findGreatestCondition())
     const active = "bg-slate-0 border-t border-l border-r"
     const inactive = "bg-slate-100 text-slate-400 border hover:text-black hover:underline"
@@ -99,6 +127,9 @@ const Card: React.FC<Props> = ({ card }) => {
                 <div className="border-l border-b border-r p-3 h-[5rem] text-center flex flex-col gap-1">
                     {findSelectedQuantity()} @ ${findSelectedPrice()}
                     {!findSelectedQuantity() && <span className="text-slate-400">Out of stock.</span>}
+                </div>
+                <div className="border p-3">
+                    <Button onClick={() => addToDeck(card)}>+ Add to Deck</Button>
                 </div>
             </div>
         </div>

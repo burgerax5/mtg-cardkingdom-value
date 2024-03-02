@@ -2,7 +2,7 @@
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 
-const Page = async () => {
+const Page = () => {
     const router = useRouter()
 
     const logout = async () => {

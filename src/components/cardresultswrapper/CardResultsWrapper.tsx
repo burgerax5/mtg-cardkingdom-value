@@ -1,7 +1,7 @@
 import styles from "./cards.module.css"
 import Card from '@/components/card/Card'
 import CardPagination from '@/components/pagination/CardPagination'
-import { Suspense } from "react"
+import React, { Suspense } from "react"
 
 interface ICard {
     name: string,
@@ -36,15 +36,23 @@ const getCards = async (params: string): Promise<{
     cards: ICard[],
     num_cards: number
 }> => {
-    const url = 'http://localhost:3000/api/cards?' + params
-    const res = await fetch(url)
+    try {
+        const url = 'http://localhost:3000/api/cards?' + params
+        const res = await fetch(url)
 
-    if (!res.ok) {
-        console.error(res.status)
-        throw new Error('Failed to fetch card data')
+        if (!res.ok) {
+            console.error(res.status)
+            throw new Error('Failed to fetch card data')
+        }
+
+        return await res.json()
+    } catch (error) {
+        console.error(error)
+        return new Promise(resolve => resolve({
+            cards: [],
+            num_cards: 0
+        }))
     }
-
-    return await res.json()
 }
 
 const CardResultsWrapper = async ({ params, curr_page }: Props) => {
@@ -54,16 +62,20 @@ const CardResultsWrapper = async ({ params, curr_page }: Props) => {
 
     return (
         <>
-            <h3 className="text-lg font-bold">Results: {num_cards}</h3>
-            <div className={styles["cards-container"]}>
-                {cards.map(card => (
-                    <Card key={crypto.randomUUID()} card={card} />
-                ))}
-            </div>
-            <CardPagination
-                path={"http://localhost:3000/cards?" + queries}
-                curr_page={curr_page}
-                num_cards={num_cards} />
+            {cards.length > 0 ?
+                <>
+                    <h3 className="text-lg font-bold">Results: {num_cards}</h3>
+                    <div className={styles["cards-container"]}>
+                        {cards.map(card => (
+                            <Card key={crypto.randomUUID()} card={card} />
+                        ))}
+                    </div>
+                    <CardPagination
+                        path={"http://localhost:3000/cards?" + queries}
+                        curr_page={curr_page}
+                        num_cards={num_cards} />
+                </> :
+                <h3 className="text-lg font-bold">Oops. No results found</h3>}
         </>
     )
 }
