@@ -3,6 +3,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { Button } from '../ui/button'
+import { useToast } from '../ui/use-toast'
 
 interface ICard {
     _id: string,
@@ -35,6 +36,11 @@ interface Props {
 
 const Card: React.FC<Props> = ({ card }) => {
     const router = useRouter()
+    const { toast } = useToast()
+
+    const checkUserHasCard = (card_name: string, qty: number) => {
+
+    }
 
     const findGreatestCondition = () => {
         const nm = card.conditions.nm.quantity
@@ -84,7 +90,7 @@ const Card: React.FC<Props> = ({ card }) => {
     }
 
     const addToDeck = async (
-        cardId: string,
+        card: ICard,
         quantity: number = 1,
         condition: 'nm' | 'ex' | 'vg' | 'g') => {
         try {
@@ -96,7 +102,7 @@ const Card: React.FC<Props> = ({ card }) => {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    cardId: cardId,
+                    cardId: card._id,
                     quantity,
                     condition
                 })
@@ -105,6 +111,11 @@ const Card: React.FC<Props> = ({ card }) => {
             if (!res.ok)
                 throw new Error("Failed to add card to deck")
             else {
+                console.log("Added card")
+                toast({
+                    title: "Added Card",
+                    description: `${quantity}x ${card.name}`
+                })
                 router.refresh()
             }
         } catch (err) {
@@ -135,7 +146,7 @@ const Card: React.FC<Props> = ({ card }) => {
                     {!findSelectedQuantity() && <span className="text-slate-400">Out of stock.</span>}
                 </div>
                 <div className="border p-3">
-                    <Button onClick={() => addToDeck(card._id, 1, selectedCondition)}>+ Add to Deck</Button>
+                    <Button onClick={() => addToDeck(card, 1, selectedCondition)}>+ Add to Deck</Button>
                 </div>
             </div>
         </div>

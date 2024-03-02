@@ -94,3 +94,30 @@ export const removeCardFromDeck = async (
         return { success: false, message: "Failed to remove card to the deck" }
     }
 }
+
+export const getCardQtyFromDeck = async (
+    username: string,
+    cardId: Schema.Types.ObjectId
+) => {
+    try {
+        connectToDB()
+        const user = await getUser(username)
+        const isCard = await checkCard(cardId)
+
+        if (!isCard) throw new Error("Card does not exist")
+
+        let owned = 0
+        user.cards.map((c) => {
+            if (String(c.cardId) === String(cardId))
+                owned++
+        })
+
+        if (owned === 0)
+            throw new Error("User does not have this card in their deck")
+
+        return owned
+    } catch (error) {
+        console.error("Failed to remove card from deck. " + (error as Error).message)
+        return -1
+    }
+}

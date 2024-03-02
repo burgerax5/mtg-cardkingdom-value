@@ -2,6 +2,7 @@ import Navbar from "@/components/navbar/Navbar";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "@/components/ui/toaster"
 
 const inter = Inter({ subsets: ["latin"] });
 import { checkLoggedIn } from "@/lib/authenticate";
@@ -24,6 +25,7 @@ export default async function RootLayout({
       <body className={`${inter.className} flex flex-col items-center min-h-svh`}>
         <Navbar isLoggedIn={isLoggedIn} />
         {children}
+        <Toaster />
       </body>
     </html>
   );
