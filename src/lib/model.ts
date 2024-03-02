@@ -4,7 +4,11 @@ const { Schema, model, connect } = mongoose
 interface IUser {
     username: string;
     password: string;
-    cards: ICard[]
+    cards: {
+        cardId: string,
+        condition: 'nm' | 'ex' | 'vg' | 'g',
+        quantity: number
+    }[]
 }
 
 interface ISet {
@@ -78,7 +82,11 @@ const userSchema = new Schema({
     },
     password: String,
     cards: {
-        type: [cardSchema],
+        type: [{
+            cardId: { type: Schema.Types.ObjectId, ref: 'Card', required: true },
+            condition: { type: String, enum: ['nm', 'ex', 'vg', 'g'], required: true },
+            quantity: { type: Number, required: true }
+        }],
         default: []
     }
 })

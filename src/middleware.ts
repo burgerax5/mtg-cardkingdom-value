@@ -2,44 +2,53 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { cookies } from 'next/headers'
 import *  as jose from "jose"
+import { getJWTPayload } from './lib/jwt'
 
 // This function can be marked `async` if using `await` inside
 export async function middleware(request: NextRequest) {
     try {
         const token = cookies().get('access_token')?.value
         const isLoggedIn = await checkAuthenticated(token)
+        // const { payload, protectedHeader } = await getJWTPayload(token)
 
-        // This route should not be accessible
-        if (request.url.includes('/api/scrape')) {
+        const requestHeaders = new Headers(request.headers)
+
+        // // This route should not be accessible
+        if (request.url.startsWith('/api/scrape')) {
             return NextResponse.redirect(new URL('/home', request.url))
         }
 
-        // Must be authenticated
-        else if (request.url.includes('/api/deck')) {
+        // // Must be authenticated
+        else if (request.url.startsWith('/api/deck')) {
             if (!isLoggedIn)
                 return NextResponse.redirect(new URL('/login', request.url))
             else
-                return NextResponse.redirect(new URL('/cards', request.url))
+                return NextResponse.next()
+        }
+
+        // // Login or Register Page
+        else if (request.url.startsWith('/api/auth/login' || request.url.startsWith('/api/auth/register'))) {
+            if (!isLoggedIn) return NextResponse.next()
+            else NextResponse.redirect(new URL('/', request.url))
         }
 
         // Must not be authenticated
-        return new Response("BRUH")
+        return NextResponse.next()
     } catch (error) {
         console.error(error)
-        return new Response("Failed to access route:", { status: 500 })
+        return new Response(
+            "Failed to access route: " + (error as Error).message,
+            { status: 500, statusText: (error as Error).message })
     }
 }
 
 const checkAuthenticated = async (token: string | undefined) => {
     if (!token) return false
-    if (!process.env.ACCESS_TOKEN)
-        throw new Error("No access token found")
-
-    const secret = process.env.ACCESS_TOKEN as string
-    return token ? await jose.jwtVerify(token, new TextEncoder().encode(secret)) : false
+    const secret = process.env.TOKEN_SECRET as string
+    const { payload, protectedHeader } = await jose.jwtVerify(token, new TextEncoder().encode(secret))
+    return !!payload && !!protectedHeader
 }
 
-// See "Matching Paths" below to learn more
 export const config = {
-    matchers: ['/api/scrape', '/api/deck*'],
+    matcher: ['/api/scrape', '/api/:path*'],
 }
