@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import AuthForm from '@/components/authform/AuthForm'
 import LoginInputs from '@/components/authform/LoginInputs'
 import { useRouter } from "next/navigation"
+import Link from 'next/link'
 
 const Page = () => {
     const router = useRouter()
@@ -38,15 +39,20 @@ const Page = () => {
 
 
     return (
-        <AuthForm
-            title="Login"
-            description="Track your MTG card prices"
-            buttonText="Sign In"
-            handleAction={login}
-            errors={errors}
-        >
-            <LoginInputs />
-        </AuthForm>
+        <main className="min-h-svh w-full flex flex-col items-center justify-center p-3">
+            <AuthForm
+                title="Login"
+                description="Track your MTG card prices"
+                buttonText="Sign In"
+                handleAction={login}
+                errors={errors}
+            >
+                <LoginInputs />
+            </AuthForm>
+            <div className="mt-6 text-slate-400 mb-60">Don't have an account?
+                <Link href="/register" className="text-black ml-3 hover:underline">Sign Up!</Link>
+            </div>
+        </main>
     )
 }
 
