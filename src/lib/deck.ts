@@ -2,31 +2,6 @@ import { connectToDB } from "./dbutils"
 import { Card, User } from "./model"
 import { Schema, Document } from "mongoose"
 
-interface ICard {
-    id: string
-    name: string,
-    image: string,
-    edition: string,
-    conditions: {
-        nm: {
-            price: number,
-            quantity: number
-        },
-        ex: {
-            price: number,
-            quantity: number
-        },
-        vg: {
-            price: number,
-            quantity: number
-        },
-        g: {
-            price: number,
-            quantity: number
-        },
-    }
-}
-
 interface IUser extends Document {
     username: string;
     password: string;
@@ -75,7 +50,6 @@ export const addCardToDeck = async (
         if (quantity <= 0 || quantity > 999) throw new Error("Invalid quantity. It must be between 1-999")
 
         const existingCardIndex = user.cards.findIndex((c) => String(c.cardId) === String(cardId) && c.condition === condition)
-        console.log(user.cards)
 
         if (existingCardIndex !== -1)
             user.cards[existingCardIndex].quantity = quantity
