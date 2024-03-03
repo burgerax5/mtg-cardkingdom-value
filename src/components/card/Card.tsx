@@ -1,7 +1,7 @@
 "use client"
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '../ui/button'
 import { useToast } from '../ui/use-toast'
 
@@ -37,10 +37,6 @@ interface Props {
 const Card: React.FC<Props> = ({ card }) => {
     const router = useRouter()
     const { toast } = useToast()
-
-    const checkUserHasCard = (card_name: string, qty: number) => {
-
-    }
 
     const findGreatestCondition = () => {
         const nm = card.conditions.nm.quantity
@@ -89,9 +85,18 @@ const Card: React.FC<Props> = ({ card }) => {
         }
     }
 
+    const [selectedCondition, setSelectedCondition] = useState<"nm" | "ex" | "vg" | "g">(findGreatestCondition())
+    const [qtyOwned, setQtyOwned] = useState(0)
+    const [qtyConditionOwned, setQtyConditionOwned] = useState<{ nm: number, ex: number, vg: number, g: number }>({
+        nm: 0, ex: 0, vg: 0, g: 0
+    })
+
+    const active = "bg-slate-0 border-t border-l border-r"
+    const inactive = "bg-slate-100 text-slate-400 border hover:text-black hover:underline"
+
     const addToDeck = async (
         card: ICard,
-        quantity: number = 1,
+        qtyToAdd: number = 1,
         condition: 'nm' | 'ex' | 'vg' | 'g') => {
         try {
             const url = 'http://localhost:3000/api/deck/add'
@@ -103,7 +108,7 @@ const Card: React.FC<Props> = ({ card }) => {
                 },
                 body: JSON.stringify({
                     cardId: card._id,
-                    quantity,
+                    quantity: qtyConditionOwned[condition] + qtyToAdd,
                     condition
                 })
             })
@@ -111,10 +116,10 @@ const Card: React.FC<Props> = ({ card }) => {
             if (!res.ok)
                 throw new Error("Failed to add card to deck")
             else {
-                console.log("Added card")
+                setQtyOwned(qty => qty + qtyToAdd)
                 toast({
                     title: "Added Card",
-                    description: `${quantity}x ${card.name}`
+                    description: `Now: ${qtyConditionOwned[condition]}x ${card.name}`
                 })
                 router.refresh()
             }
@@ -123,9 +128,25 @@ const Card: React.FC<Props> = ({ card }) => {
         }
     }
 
-    const [selectedCondition, setSelectedCondition] = useState<"nm" | "ex" | "vg" | "g">(findGreatestCondition())
-    const active = "bg-slate-0 border-t border-l border-r"
-    const inactive = "bg-slate-100 text-slate-400 border hover:text-black hover:underline"
+    useEffect(() => {
+        const getQtyOwned = async (card_id: string) => {
+            try {
+                const api = 'http://localhost:3000/api/deck/quantity?cardId=' + card_id
+                const res = await fetch(api)
+                const { total, nm, ex, vg, g } = await res.json()
+
+                if (total) setQtyOwned(total as number)
+                if (nm || ex || vg || g) {
+                    setQtyConditionOwned({ nm, ex, vg, g })
+                }
+            } catch (error) {
+                console.error("Failed to check deck for card")
+                return { owned: 0 }
+            }
+        }
+
+        getQtyOwned(card._id)
+    }, [])
 
     return (
         <div className="flex flex-col max-w-[160px] gap-2">
@@ -133,7 +154,10 @@ const Card: React.FC<Props> = ({ card }) => {
             <Image
                 src={`${card.image.includes("https") ? card.image : "https://www.cardkingdom.com" + card.image}`}
                 alt={card.name} width={180} height={220} className="rounded-lg w-full h-full" />
-            <div className="text-sm truncate py-1">{card.name}</div>
+            <div className="flex flex-col">
+                <div className={`text-sm truncate font-bold ${qtyOwned === 0 ? "text-slate-400" : "text-emerald-600"}`}>Owned: {qtyOwned}</div>
+                <div className="text-sm truncate">{card.name}</div>
+            </div>
             <div className="flex flex-col">
                 <div className="grid grid-cols-4 cursor-pointer text-center">
                     <div className={`${selectedCondition === "nm" ? active : inactive}`} onClick={() => setSelectedCondition("nm")}>NM</div>
@@ -145,8 +169,10 @@ const Card: React.FC<Props> = ({ card }) => {
                     {findSelectedQuantity()} @ ${findSelectedPrice()}
                     {!findSelectedQuantity() && <span className="text-slate-400">Out of stock.</span>}
                 </div>
-                <div className="border p-3">
-                    <Button onClick={() => addToDeck(card, 1, selectedCondition)}>+ Add to Deck</Button>
+                <div className="w-full border p-3 flex items-center justify-between">
+                    <Button variant="secondary" className="hover:bg-destructive" disabled={qtyOwned < 1} onClick={() => addToDeck(card, -1, selectedCondition)}>-</Button>
+                    {qtyConditionOwned[selectedCondition]}
+                    <Button variant="secondary" className="hover:bg-emerald-600 hover:text-white" onClick={() => addToDeck(card, 1, selectedCondition)}>+</Button>
                 </div>
             </div>
         </div>

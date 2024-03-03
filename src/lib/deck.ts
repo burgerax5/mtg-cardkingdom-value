@@ -41,8 +41,6 @@ export const addCardToDeck = async (
     quantity: number,
     condition: 'nm' | 'ex' | 'vg' | 'g') => {
     try {
-        console.log(cardId, quantity, condition)
-
         connectToDB()
         const user = await getUser(username)
         const isCard = await checkCard(cardId)
@@ -106,18 +104,17 @@ export const getCardQtyFromDeck = async (
 
         if (!isCard) throw new Error("Card does not exist")
 
-        let owned = 0
+        let owned = { total: 0, nm: 0, ex: 0, vg: 0, g: 0 }
         user.cards.map((c) => {
-            if (String(c.cardId) === String(cardId))
-                owned++
+            if (String(c.cardId) === String(cardId)) {
+                owned.total += c.quantity
+                owned[c.condition] = c.quantity
+            }
         })
-
-        if (owned === 0)
-            throw new Error("User does not have this card in their deck")
 
         return owned
     } catch (error) {
-        console.error("Failed to remove card from deck. " + (error as Error).message)
-        return -1
+        console.error("Failed to check quantity of card in deck. " + (error as Error).message)
+        return { total: 0, nm: 0, ex: 0, vg: 0, g: 0 }
     }
 }
