@@ -8,6 +8,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination"
+import { useSearchParams, usePathname } from 'next/navigation'
 
 interface Props {
   path: string,
@@ -17,10 +18,12 @@ interface Props {
 
 const CardPagination: React.FC<Props> = ({ path, curr_page, num_cards }) => {
   const curr = curr_page ? parseInt(curr_page.replace('page=', '')) : 1
-  const createPagination = (old_path: string, curr: number, num_cards: number) => {
+  const pages = Math.ceil(num_cards / 100)
+  const params = useSearchParams()
+
+  const createPagination = (old_path: string, curr: number) => {
     const path = old_path.replace('page=null', '') + '&'
 
-    const pages = Math.ceil(num_cards / 100)
     const buttons: any = []
     const getEllipsis = () => {
       return <PaginationItem key={crypto.randomUUID()}><PaginationEllipsis /></PaginationItem>
@@ -89,18 +92,32 @@ const CardPagination: React.FC<Props> = ({ path, curr_page, num_cards }) => {
     return buttons
   }
 
+  const getNewPath = (new_page: number) => {
+    if (new_page < 1 || new_page > pages) return "#"
+
+    const search_params: string[] = []
+
+    const name = params.get('name')
+    const edition = params.get('edition')
+
+    if (name) search_params.push('name=' + name)
+    if (edition) search_params.push('edition=' + edition)
+    search_params.push('page=' + new_page)
+
+    return usePathname() + '?' + search_params.join('&')
+  }
 
   return (
     <Pagination>
       <PaginationContent>
         <PaginationItem key="prev">
-          <PaginationPrevious href="#" />
+          <PaginationPrevious href={getNewPath(curr - 1)} />
         </PaginationItem>
 
-        {createPagination(path, curr, num_cards)}
+        {createPagination(path, curr)}
 
-        <PaginationItem key="next">
-          <PaginationNext href="#" />
+        <PaginationItem key="next" >
+          <PaginationNext href={getNewPath(curr + 1)} />
         </PaginationItem>
       </PaginationContent>
     </Pagination>

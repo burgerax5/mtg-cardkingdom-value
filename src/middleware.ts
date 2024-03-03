@@ -10,13 +10,15 @@ export async function middleware(request: NextRequest) {
         const token = cookies().get('access_token')?.value
         const isLoggedIn = await checkAuthenticated(token)
 
+        if (!isLoggedIn && token) return NextResponse.redirect(new URL('/api/auth/logout'))
+
         // This route should not be accessible
-        if (request.url.startsWith('/api/scrape')) {
-            return NextResponse.redirect(new URL('/home', request.url))
+        if (request.nextUrl.pathname.startsWith('/api/scrape')) {
+            return NextResponse.redirect(new URL('/', request.url))
         }
 
         // Deck API is only accessible to authenticated users
-        else if (request.url.startsWith('/api/deck')) {
+        else if (request.nextUrl.pathname.startsWith('/api/deck')) {
             if (!isLoggedIn)
                 return NextResponse.redirect(new URL('/login', request.url))
             else
@@ -24,15 +26,27 @@ export async function middleware(request: NextRequest) {
         }
 
         // Login or Register Page
-        else if (request.url.startsWith('/api/auth/login' || request.url.startsWith('/api/auth/register'))) {
+        else if (request.nextUrl.pathname.startsWith('/api/auth/login' || request.nextUrl.pathname.startsWith('/api/auth/register'))) {
             if (!isLoggedIn) return NextResponse.next()
-            else NextResponse.redirect(new URL('/home', request.url))
+            else return NextResponse.redirect(new URL('/', request.url))
         }
 
         // Logout
-        else if (request.url.startsWith('/api/auth/logout')) {
-            if (!isLoggedIn) return NextResponse.redirect(new URL('/home', request.url))
-            else NextResponse.next()
+        else if (request.nextUrl.pathname.startsWith('/api/auth/logout')) {
+            if (!token) return NextResponse.redirect(new URL('/login', request.url))
+            else return NextResponse.next()
+        }
+
+        // Deck page should only be accessible if the user is logged in
+        else if (request.nextUrl.pathname.startsWith('/deck')) {
+            if (!isLoggedIn) return NextResponse.redirect(new URL('/login', request.url))
+            else return NextResponse.next()
+        }
+
+        // Login & Register routes should only be accessible to guest users
+        else if (request.nextUrl.pathname.startsWith('/login') || request.nextUrl.pathname.startsWith('/register')) {
+            if (!isLoggedIn) return NextResponse.next()
+            else return NextResponse.redirect(new URL('/', request.url))
         }
 
         // Must not be authenticated
@@ -53,5 +67,5 @@ const checkAuthenticated = async (token: string | undefined) => {
 }
 
 export const config = {
-    matcher: ['/api/scrape', '/api/:path*'],
+    matcher: ['/api/scrape', '/api/:path*', '/login', '/register', '/logout', '/deck'],
 }

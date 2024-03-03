@@ -37,12 +37,16 @@ export async function GET(req: Request) {
         const tmp_payload: any = payload
 
         const deck = await getDeck(tmp_payload.username)
-
         if (!deck) throw new Error("Could not find deck")
 
-        connectToDB()
-        const { cards, num_cards } = await getCards(deck)
+        const url = new URL(req.url)
 
+        const page = url.searchParams.get('page') ? parseInt(url.searchParams.get('page') as string) : 1
+        const searchParam = url.searchParams.get('name') ? url.searchParams.get('name') as string : "";
+        const editionParam = url.searchParams.get('edition') ? url.searchParams.get('edition') as string : ""
+
+        connectToDB()
+        const { cards, num_cards } = await getCards(deck, page, searchParam, editionParam)
         return new Response(JSON.stringify({
             cards: cards,
             num_cards: num_cards
@@ -53,14 +57,21 @@ export async function GET(req: Request) {
     }
 }
 
-const getCards = async (deck: {
-    cardId: Schema.Types.ObjectId;
-    condition: "nm" | "ex" | "vg" | "g";
-    quantity: number;
-}[]) => {
+const getCards = async (
+    deck: {
+        cardId: Schema.Types.ObjectId;
+        condition: "nm" | "ex" | "vg" | "g";
+        quantity: number;
+    }[],
+    page: number,
+    name: string,
+    edition: string
+) => {
     try {
-        const cards: ICard[] = []
+        let cards: ICard[] = []
         let num_cards = 0
+
+        if (edition === "All Editions") edition = ""
 
         connectToDB()
         for (const card of deck) {
@@ -72,6 +83,8 @@ const getCards = async (deck: {
 
             num_cards += card.quantity
         }
+
+        cards = cards.filter(c => (c.name.toLowerCase().includes(name.toLowerCase()) && c.edition.includes(edition)))
 
         return { cards, num_cards }
     } catch (error) {
