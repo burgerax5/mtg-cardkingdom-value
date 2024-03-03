@@ -40,10 +40,11 @@ export const login = async (user: {
         .then(async (docs) => {
             if (!docs) console.log('No user found')
             else if (await verifyPassword(password, docs.password)) {
-                cookies().set('access_token', SignJWT({
-                    id: docs.id,
-                    username: docs.username
-                }), {
+                const token = await SignJWT({ id: docs.id, username: docs.username })
+
+                if (!token) throw new Error("Invalid token")
+
+                cookies().set('access_token', token, {
                     expires: new Date(Date.now() + 60 * 60 * 1000),
                     httpOnly: true
                 })

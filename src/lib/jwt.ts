@@ -1,34 +1,42 @@
-import jwt from "jsonwebtoken"
 import * as jose from "jose"
 
-export const SignJWT = (user: {
+export const SignJWT = async (user: {
     id: string,
     username: string,
 }) => {
-    return jwt.sign(user, process.env.TOKEN_SECRET as string, { expiresIn: '1h' })
+    try {
+        const secret = process.env.TOKEN_SECRET
+
+        if (!secret) throw new Error("No access token secret found")
+        const encoded_secret = new TextEncoder().encode(secret)
+
+        const token = await new jose.SignJWT(user)
+            .setProtectedHeader({ alg: 'HS256' })
+            .setIssuedAt()
+            .setExpirationTime('15m')
+            .sign(encoded_secret)
+
+        return token
+    } catch (error) {
+        console.error((error as Error).message)
+        return
+    }
 }
 
 export const verifyJWT = async (token: string) => {
     try {
-        // Decoding the token and obtaining the user information
-        const user = jwt.verify(token, process.env.TOKEN_SECRET as string);
+        const secret = process.env.TOKEN_SECRET
+        if (!secret) throw new Error("No access token secret found")
 
-        // If verification is successful and user is found, return true
-        return !!user;
+        // Decoding the token and obtaining the user information
+        const verifiedToken = jose.jwtVerify(token, new TextEncoder().encode(secret));
+
+        return !!verifiedToken;
     } catch (error) {
         console.error('An error occurred while verifying JWT', error);
         return false;
     }
 }
-
-// export const getJWTPayload = async (token: string) => {
-//     return new Promise((resolve, reject) => {
-//         jwt.verify(token, process.env.TOKEN_SECRET as string, (err, decoded) => {
-//             if (err) reject(err)
-//             resolve(decoded)
-//         })
-//     })
-// }
 
 export const getJWTPayload = async (token: string | undefined) => {
     if (!token)
