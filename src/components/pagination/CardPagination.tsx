@@ -17,6 +17,7 @@ interface Props {
 }
 
 const CardPagination: React.FC<Props> = ({ path, curr_page, num_cards }) => {
+  const pathname = usePathname()
   const curr = curr_page ? parseInt(curr_page.replace('page=', '')) : 1
   const pages = Math.ceil(num_cards / 100)
   const params = useSearchParams()
@@ -104,7 +105,7 @@ const CardPagination: React.FC<Props> = ({ path, curr_page, num_cards }) => {
     if (edition) search_params.push('edition=' + edition)
     search_params.push('page=' + new_page)
 
-    return usePathname() + '?' + search_params.join('&')
+    return pathname + '?' + search_params.join('&')
   }
 
   return (

@@ -14,7 +14,7 @@ const Page = () => {
 
     useEffect(() => {
         logout()
-    }, [])
+    })
 
     return (
         <div>Logging out</div>

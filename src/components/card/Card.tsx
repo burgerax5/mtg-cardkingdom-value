@@ -157,7 +157,7 @@ const Card: React.FC<Props> = ({ card }) => {
         }
 
         getQtyOwned(card._id)
-    }, [])
+    })
 
     return (
         <div className="flex flex-col max-w-[160px] gap-2">

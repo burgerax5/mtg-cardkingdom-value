@@ -49,7 +49,7 @@ const Page = () => {
             >
                 <LoginInputs />
             </AuthForm>
-            <div className="mt-6 text-slate-400 mb-60">Don't have an account?
+            <div className="mt-6 text-slate-400 mb-60">Don&apos;t have an account?
                 <Link href="/register" className="text-black ml-3 hover:underline">Sign Up!</Link>
             </div>
         </main>
