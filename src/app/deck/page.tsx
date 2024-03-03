@@ -2,12 +2,29 @@
 import CardResultsWrapper from '@/components/cardresultswrapper/CardResultsWrapper'
 import SearchForm from '@/components/searchform/SearchForm'
 import { useSearchParams } from 'next/navigation'
-import React, { Suspense } from 'react'
-
+import React, { Suspense, useState, useEffect } from 'react'
 
 const Page = () => {
     const searchParams = useSearchParams()
     const api = "http://localhost:3000/api/deck"
+    const [deckValue, setDeckValue] = useState(0)
+
+    useEffect(() => {
+        const getDeckValue = async () => {
+            try {
+                const url = "http://localhost:3000/api/deck/price"
+                const res = await fetch(url)
+                const { price } = await res.json()
+
+                setDeckValue(price)
+            } catch (error) {
+                console.error("Failed to retrieve deck value")
+                return
+            }
+        }
+
+        getDeckValue()
+    }, [])
 
     const params: string[] = []
 
@@ -23,6 +40,7 @@ const Page = () => {
     return (
         <div className="p-3">
             <h1 className="text-[2rem] font-bold">Your MTG Deck</h1>
+            <h2 className="text-2xl font-bold">Deck Value: <span className="text-emerald-600">USD${deckValue.toFixed(2)}</span></h2>
             <div className="flex flex-col">
                 <SearchForm search={search} />
                 <Suspense fallback={<div>Loading...</div>}>

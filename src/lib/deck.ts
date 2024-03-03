@@ -119,6 +119,28 @@ export const getCardQtyFromDeck = async (
     }
 }
 
-// export const getCardsFromDeck = async (
-//     username: string
-// )
+export const getDeckPrice = async (
+    username: string
+) => {
+    try {
+        const user = await User.findOne({ username: username })
+
+        if (!user) throw new Error("User not found")
+
+        let sum = 0
+        for (let i = 0; i < user.cards.length; i++) {
+            const cardId = user.cards[i].cardId
+            const card = await Card.findById(cardId)
+
+            if (!card) throw new Error("Card not found")
+
+            const condition = card.conditions[user.cards[i].condition]
+            sum += condition.price * user.cards[i].quantity
+        }
+
+        return sum
+    } catch (error) {
+        console.error((error as Error).message)
+        return 0
+    }
+}
