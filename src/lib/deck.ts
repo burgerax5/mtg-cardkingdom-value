@@ -118,3 +118,7 @@ export const getCardQtyFromDeck = async (
         return { total: 0, nm: 0, ex: 0, vg: 0, g: 0 }
     }
 }
+
+// export const getCardsFromDeck = async (
+//     username: string
+// )

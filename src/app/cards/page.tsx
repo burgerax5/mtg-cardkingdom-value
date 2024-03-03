@@ -7,6 +7,7 @@ import React, { Suspense } from 'react'
 
 const Page = () => {
     const searchParams = useSearchParams()
+    const api = "http://localhost:3000/api/cards"
 
     const params: string[] = []
 
@@ -25,7 +26,7 @@ const Page = () => {
             <div className="flex flex-col">
                 <SearchForm search={search} />
                 <Suspense fallback={<div>Loading...</div>}>
-                    <CardResultsWrapper params={params} curr_page={searchParams.get('page')} />
+                    <CardResultsWrapper api={api} params={params} curr_page={searchParams.get('page')} />
                 </Suspense>
             </div>
         </div>

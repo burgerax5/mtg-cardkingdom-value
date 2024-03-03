@@ -29,16 +29,17 @@ interface ICard {
 }
 
 interface Props {
+    api: string
     params: string[],
     curr_page: string | null
 }
 
-const getCards = async (params: string): Promise<{
+const getCards = async (api: string, params: string): Promise<{
     cards: ICard[],
     num_cards: number
 }> => {
     try {
-        const url = 'http://localhost:3000/api/cards?' + params
+        const url = api + "?" + params
         const res = await fetch(url)
 
         if (!res.ok) {
@@ -56,9 +57,9 @@ const getCards = async (params: string): Promise<{
     }
 }
 
-const CardResultsWrapper = async ({ params, curr_page }: Props) => {
+const CardResultsWrapper = async ({ api, params, curr_page }: Props) => {
     const queries = params.join('&')
-    const results = await getCards(queries)
+    const results = await getCards(api, queries)
     const { cards, num_cards } = results
 
     return (

@@ -55,8 +55,8 @@ const Card: React.FC<Props> = ({ card }) => {
         return conditions[selected] as "nm" | "ex" | "vg" | "g"
     }
 
-    const findSelectedPrice = () => {
-        switch (selectedCondition) {
+    const findSelectedPrice = (condition: "g" | "nm" | "ex" | "vg") => {
+        switch (condition) {
             case "nm":
                 return card.conditions.nm.price.toFixed(2)
             case "ex":
@@ -90,6 +90,7 @@ const Card: React.FC<Props> = ({ card }) => {
     const [qtyConditionOwned, setQtyConditionOwned] = useState<{ nm: number, ex: number, vg: number, g: number }>({
         nm: 0, ex: 0, vg: 0, g: 0
     })
+    const [accumulatedPrice, setAccumulatedPrice] = useState(0)
 
     const active = "bg-slate-0 border-t border-l border-r"
     const inactive = "bg-slate-100 text-slate-400 border hover:text-black hover:underline"
@@ -117,9 +118,13 @@ const Card: React.FC<Props> = ({ card }) => {
                 throw new Error("Failed to add card to deck")
             else {
                 setQtyOwned(qty => qty + qtyToAdd)
+                setQtyConditionOwned(prev => ({
+                    ...prev, [condition]: prev[condition] + qtyToAdd
+                }))
+                setAccumulatedPrice(price => price + qtyToAdd * parseFloat(findSelectedPrice(condition) as string))
                 toast({
                     title: "Added Card",
-                    description: `Now: ${qtyConditionOwned[condition]}x ${card.name}`
+                    description: `Now: ${qtyConditionOwned[condition] + qtyToAdd}x ${card.name}`
                 })
                 router.refresh()
             }
@@ -139,6 +144,12 @@ const Card: React.FC<Props> = ({ card }) => {
                 if (nm || ex || vg || g) {
                     setQtyConditionOwned({ nm, ex, vg, g })
                 }
+
+                const sumPrice = nm * parseFloat(findSelectedPrice("nm") as string) +
+                    ex * parseFloat(findSelectedPrice("ex") as string) + vg * parseFloat(findSelectedPrice("vg") as string)
+                    + g * parseFloat(findSelectedPrice("g") as string)
+
+                setAccumulatedPrice(sumPrice)
             } catch (error) {
                 console.error("Failed to check deck for card")
                 return { owned: 0 }
@@ -155,7 +166,7 @@ const Card: React.FC<Props> = ({ card }) => {
                 src={`${card.image.includes("https") ? card.image : "https://www.cardkingdom.com" + card.image}`}
                 alt={card.name} width={180} height={220} className="rounded-lg w-full h-full" />
             <div className="flex flex-col">
-                <div className={`text-sm truncate font-bold ${qtyOwned === 0 ? "text-slate-400" : "text-emerald-600"}`}>Owned: {qtyOwned}</div>
+                <div className={`text-sm truncate font-bold ${qtyOwned === 0 ? "text-slate-400" : "text-emerald-600"}`}>Owned: {qtyOwned} @ ${accumulatedPrice}</div>
                 <div className="text-sm truncate">{card.name}</div>
             </div>
             <div className="flex flex-col">
@@ -166,7 +177,7 @@ const Card: React.FC<Props> = ({ card }) => {
                     <div className={`${selectedCondition === "g" ? active : inactive}`} onClick={() => setSelectedCondition("g")}>G</div>
                 </div>
                 <div className="border-l border-b border-r p-3 h-[5rem] text-center flex flex-col gap-1">
-                    {findSelectedQuantity()} @ ${findSelectedPrice()}
+                    {findSelectedQuantity()} @ ${findSelectedPrice(selectedCondition)}
                     {!findSelectedQuantity() && <span className="text-slate-400">Out of stock.</span>}
                 </div>
                 <div className="w-full border p-3 flex items-center justify-between">
