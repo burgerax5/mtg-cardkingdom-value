@@ -29,7 +29,7 @@ export const verifyJWT = async (token: string) => {
         if (!secret) throw new Error("No access token secret found")
 
         // Decoding the token and obtaining the user information
-        const verifiedToken = jose.jwtVerify(token, new TextEncoder().encode(secret));
+        const verifiedToken = await jose.jwtVerify(token, new TextEncoder().encode(secret));
 
         return !!verifiedToken;
     } catch (error) {

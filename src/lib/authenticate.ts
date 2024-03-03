@@ -45,7 +45,7 @@ export const login = async (user: {
                 if (!token) throw new Error("Invalid token")
 
                 cookies().set('access_token', token, {
-                    expires: new Date(Date.now() + 60 * 60 * 1000),
+                    expires: new Date(Date.now() + 15 * 60 * 1000),
                     httpOnly: true
                 })
             } else {

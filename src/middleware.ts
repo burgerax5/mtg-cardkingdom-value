@@ -7,10 +7,25 @@ import { getJWTPayload } from './lib/jwt'
 // This function can be marked `async` if using `await` inside
 export async function middleware(request: NextRequest) {
     try {
-        const token = cookies().get('access_token')?.value
+        let token = cookies().get('access_token')?.value
+
+        if (token && !request.nextUrl.pathname.startsWith('/api/auth/logout')) {
+            const exp = jose.decodeJwt(token).exp as number
+            const now = new Date().getTime()
+
+            if (exp <= now) {
+                return NextResponse.redirect(new URL('/api/auth/logout', request.url))
+            }
+        }
+
+        // Logout
+        if (request.nextUrl.pathname.startsWith('/api/auth/logout')) {
+            return NextResponse.next()
+        }
+
         const isLoggedIn = await checkAuthenticated(token)
 
-        if (!isLoggedIn && token) return NextResponse.redirect(new URL('/api/auth/logout'))
+        // if (!isLoggedIn && token) return NextResponse.redirect(new URL('/api/auth/logout', request.url))
 
         // This route should not be accessible
         if (request.nextUrl.pathname.startsWith('/api/scrape')) {
@@ -29,12 +44,6 @@ export async function middleware(request: NextRequest) {
         else if (request.nextUrl.pathname.startsWith('/api/auth/login' || request.nextUrl.pathname.startsWith('/api/auth/register'))) {
             if (!isLoggedIn) return NextResponse.next()
             else return NextResponse.redirect(new URL('/', request.url))
-        }
-
-        // Logout
-        else if (request.nextUrl.pathname.startsWith('/api/auth/logout')) {
-            if (!token) return NextResponse.redirect(new URL('/login', request.url))
-            else return NextResponse.next()
         }
 
         // Deck page should only be accessible if the user is logged in
